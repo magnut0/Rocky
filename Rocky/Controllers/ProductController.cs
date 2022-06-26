@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Rocky.Data;
 using Rocky.Models;
 using Rocky.Models.ViewModels;
@@ -67,36 +68,95 @@ namespace Rocky.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(ProductVM productVM)
         {
+            
+            var files = HttpContext.Request.Form.Files;
+            string webRootPath = _webHostEnvironment.WebRootPath;
+            
 
-                var files = HttpContext.Request.Form.Files;
-                string webRootPath = _webHostEnvironment.WebRootPath;
+            //Creating
+            string upload = webRootPath + WC.ImagePath;
+            string fileName = Guid.NewGuid().ToString();
+            string extension = Path.GetExtension(files[0].FileName);
+            
+            using (var fileStream = new FileStream(Path.Combine(upload, fileName + extension), FileMode.Create))
+            {
+                files[0].CopyTo(fileStream);
+            }
+            
+            productVM.Product.Image = fileName + extension;
+            
+            _db.Product.Add(productVM.Product);
 
-                if (productVM.Product.Id == 0)
-                {
-                    //Creating
-                    string upload = webRootPath + WC.ImagePath;
-                    string fileName = Guid.NewGuid().ToString();
-                    string extension = Path.GetExtension(files[0].FileName);
-
-                    using (var fileStream = new FileStream(Path.Combine(upload, fileName + extension), FileMode.Create))
-                    {
-                        files[0].CopyTo(fileStream);
-                    }
-
-                    productVM.Product.Image = fileName + extension;
-
-                    _db.Product.Add(productVM.Product);
-                }
-                else
-                {
-                    //updating
-                }
-
-                _db.SaveChanges();
-                return RedirectToAction("Index");
+            
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
+        public IActionResult Edit(int? id)
+        {
+            ProductVM productVM = new ProductVM()
+            {
+                Product = new Product(),
+                CategorySelectList = _db.Category.Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                })
+            };
+            if (id == null)
+            {
+                //this is for create
+                return View(productVM);
+            }
+            else
+            {
+                productVM.Product = _db.Product.Find(id);
+                if (productVM.Product == null)
+                {
+                    return NotFound();
+                }
+                return View(productVM);
+            }
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        // POST - EDIT
+        public IActionResult Edit(ProductVM productVM)
+        {
+            var files = HttpContext.Request.Form.Files;
+            string webRootPath = _webHostEnvironment.WebRootPath;
+
+            var objFromDb = _db.Product.FirstOrDefault(u => u.Id == productVM.Product.Id);
+
+            if (files.Count > 0)
+            {
+                string upload = webRootPath + WC.ImagePath;
+                string fileName = Guid.NewGuid().ToString();
+                string extension = Path.GetExtension(files[0].FileName);
+
+                var oldFile = Path.Combine(upload, objFromDb.Image);
+
+                if (System.IO.File.Exists(oldFile))
+                {
+                    System.IO.File.Delete(oldFile);
+                }
+
+                using (var fileStream = new FileStream(Path.Combine(upload, fileName + extension), FileMode.Create))
+                {
+                    files[0].CopyTo(fileStream);
+                }
+
+                productVM.Product.Image = fileName + extension;
+            }
+            else
+            {
+                productVM.Product.Image = objFromDb.Image;
+            }
+            _db.Product.Update(productVM.Product);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
         // Get - Delete
         public IActionResult Delete(int? id)

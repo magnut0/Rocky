@@ -57,16 +57,7 @@
                 <div class="form-group row">
                     <div class="col-8 offset-4 row">
                         <div class="col">
-                            @if (Model.Product.Id != 0)
-                            {
-                                // update
-                                 <input type="submit" class="btn btn-info w-100 text-white" value="Update" /> 
-                            }
-                            else
-                            {
-                                // create
-                                <input type="submit" onclick="return validateInput()" class="btn btn-primary w-100 text-white" value="Create" /> 
-                            }
+                             <input type="submit" onclick="return validateInput()" class="btn btn-primary w-100 text-white" value="Create" /> 
                         </div>
                         <div class="col">
                             <a asp-action="Index" class="btn btn-success w-100"><i class="fa-solid fa-arrow-left"></i> Back</a> 
@@ -74,10 +65,6 @@
                     </div>
                 </div>
             </div>
-            @*<div class="col-4">
-                 Keep this empty 
-                <img src="@WC.ImagePath@Model.Product.Image" width="100%" style="border-radius: 5px; border: 1px solid #bbb"
-            </div>*@
         </div>
     </div>
 </form>
