@@ -92,7 +92,7 @@ namespace Rocky.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int id)
         {
             ProductVM productVM = new ProductVM()
             {
@@ -103,31 +103,25 @@ namespace Rocky.Controllers
                     Value = i.Id.ToString()
                 })
             };
-            if (id == null)
+            productVM.Product = _db.Product.Find(id);
+            if (productVM.Product == null)
             {
-                //this is for create
-                return View(productVM);
+                return NotFound();
             }
-            else
-            {
-                productVM.Product = _db.Product.Find(id);
-                if (productVM.Product == null)
-                {
-                    return NotFound();
-                }
-                return View(productVM);
-            }
+            return View(productVM);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         // POST - EDIT
-        public IActionResult Edit(ProductVM productVM)
+        public IActionResult Edit(ProductVM productVM, int id)
         {
             var files = HttpContext.Request.Form.Files;
             string webRootPath = _webHostEnvironment.WebRootPath;
 
-            var objFromDb = _db.Product.FirstOrDefault(u => u.Id == productVM.Product.Id);
+            var objFromDb = _db.Product.AsNoTracking().FirstOrDefault(u => u.Id == id);
+            productVM.Product.Id = objFromDb.Id;
+            productVM.Product.Image = objFromDb.Image;
 
             if (files.Count > 0)
             {
@@ -151,7 +145,7 @@ namespace Rocky.Controllers
             }
             else
             {
-                productVM.Product.Image = objFromDb.Image;
+                
             }
             _db.Product.Update(productVM.Product);
             _db.SaveChanges();
