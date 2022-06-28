@@ -28,6 +28,17 @@ namespace Rocky.Controllers
             return View(homeVM);
         }
 
+        public IActionResult Details(int id)
+        {
+            DetailsVM detailsVM = new DetailsVM()
+            {
+                Product = _db.Product.Include(prod => prod.Category).Include(prod => prod.ApplicationType).Where(prod => prod.Id == id).FirstOrDefault(),
+                ExistsInCard = false
+            };
+
+            return View(detailsVM);
+        }
+
         public IActionResult Privacy()
         {
             return View();
