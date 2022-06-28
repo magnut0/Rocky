@@ -20,11 +20,12 @@ namespace Rocky.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<Product> objList = _db.Product;
-            foreach (var obj in objList)
-            {
-                obj.Category = _db.Category.FirstOrDefault(u => u.Id == obj.CategoryId);
-            };
+            IEnumerable<Product> objList = _db.Product.Include(prod => prod.Category).Include(prod => prod.ApplicationType);
+            //foreach (var obj in objList)
+            //{
+            //    obj.Category = _db.Category.FirstOrDefault(u => u.Id == obj.CategoryId);
+            //    obj.ApplicationType = _db.ApplicationType.FirstOrDefault(u => u.Id == obj.ApplicationTypeId);
+            //};
             return View(objList);
         }
         //GET - UPSERT
@@ -42,6 +43,11 @@ namespace Rocky.Controllers
             {
                 Product = new Product(),
                 CategorySelectList = _db.Category.Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                }),
+                ApplicationTypeSelectList = _db.ApplicationType.Select(i => new SelectListItem
                 {
                     Text = i.Name,
                     Value = i.Id.ToString()
@@ -101,6 +107,11 @@ namespace Rocky.Controllers
                 {
                     Text = i.Name,
                     Value = i.Id.ToString()
+                }),
+                ApplicationTypeSelectList = _db.ApplicationType.Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
                 })
             };
             productVM.Product = _db.Product.Find(id);
@@ -156,21 +167,31 @@ namespace Rocky.Controllers
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0) return NotFound();
-            var obj = _db.Product.Find(id);
-            if (obj == null) return NotFound();
+            // Жадная загрузка - говорим, что также надо загрузить дополнительно из базы данных
+            Product product = _db.Product.Include(prod => prod.Category).Include(prod => prod.ApplicationType).FirstOrDefault(prod => prod.Id == id);
+            // product.Category = _db.Category.Find(product.CategoryId);
+            if (product == null) return NotFound();
 
-            return View(obj);
+            return View(product);
         }
 
         // POST - Delete
-        [HttpPost]
+        [HttpPost, ActionName("Delete")] // меняем имя пост запроса на Delete
         [ValidateAntiForgeryToken] // добавление специального токена для защиты данных
         public IActionResult DeletePost(int? id)
         {
-            var obj = _db.Product.Find(id);
-            if (obj == null) return NotFound();
+            var product = _db.Product.Find(id);
+            if (product == null) return NotFound();
 
-            _db.Product.Remove(obj);
+            string upload = _webHostEnvironment.WebRootPath + WC.ImagePath;
+            var oldFile = Path.Combine(upload, product.Image);
+
+            if (System.IO.File.Exists(oldFile))
+            {
+                System.IO.File.Delete(oldFile);
+            }
+
+            _db.Product.Remove(product);
             _db.SaveChanges();
             return RedirectToAction("Index");
 
