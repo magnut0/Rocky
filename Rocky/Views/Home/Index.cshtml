@@ -12,7 +12,7 @@
     <div class="row">
         @foreach (var product in Model.Products)
         {
-            
+            <partial name="_IndividualProductCard" model="product" />
         }
     </div>
 </div>
