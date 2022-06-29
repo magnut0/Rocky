@@ -28,7 +28,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item dropdown">
+                        @if(User.IsInRole(WC.AdminRole))
+                        {
+                            <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                               Content Management
                             </a>
@@ -40,6 +42,7 @@
                               <li><a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Create Admin User</a></li>
                             </ul>
                         </li>
+                        }
                         <li>
                             @if(HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCard) != null)
                             {
