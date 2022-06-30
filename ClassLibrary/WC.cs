@@ -8,6 +8,10 @@
         public const string AdminRole = "Admin";
         public const string EmailAdmin = "xah3ep@gmail.com";
         public const string CustomerRole = "Customer";
+        
+        
+        public const string CategoryName = "CategoryType";
+        public const string ApplicationTypeName = "ApplicationType";
 
 
     }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rocky_DataAccess;
+using Rocky_DataAccess.Repository;
+using Rocky_DataAccess.Repository.IRepository;
 using Rocky_Models;
 using Rocky_Utility;
 
@@ -9,14 +11,14 @@ namespace Rocky.Controllers
     [Authorize(Roles = WC.AdminRole)]
     public class ApplicationTypeController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        public ApplicationTypeController(ApplicationDbContext db)
+        private readonly IApplicationTypeRepository _appTypeRepo;
+        public ApplicationTypeController(IApplicationTypeRepository appTypeRepo)
         {
-            _db = db;
+            _appTypeRepo = appTypeRepo;
         }
         public IActionResult Index()
         {
-            IEnumerable<ApplicationType> objList = _db.ApplicationType;
+            IEnumerable<ApplicationType> objList = _appTypeRepo.GetAll();
             return View(objList);
         }
 
@@ -32,8 +34,8 @@ namespace Rocky.Controllers
         {
             if (!ModelState.IsValid) return View(test);
 
-            _db.ApplicationType.Add(test);
-            _db.SaveChanges();
+            _appTypeRepo.Add(test);
+            _appTypeRepo.Save();
             return RedirectToAction("Index");
         }
 
@@ -41,7 +43,7 @@ namespace Rocky.Controllers
         public IActionResult Edit(int? id)
         {
             if (id == null || id == 0) return NotFound();
-            var obj = _db.ApplicationType.Find(id);
+            var obj = _appTypeRepo.Find(id.GetValueOrDefault());
             if (obj == null) return NotFound();
 
             return View(obj);
@@ -54,8 +56,8 @@ namespace Rocky.Controllers
         {
             if (!ModelState.IsValid) return View(test);
 
-            _db.ApplicationType.Update(test);
-            _db.SaveChanges();
+            _appTypeRepo.Update(test);
+            _appTypeRepo.Save();
             return RedirectToAction("Index");
         }
 
@@ -63,7 +65,7 @@ namespace Rocky.Controllers
         public IActionResult Delete(int? id)
         {
             if (id == null || id == 0) return NotFound();
-            var obj = _db.ApplicationType.Find(id);
+            var obj = _appTypeRepo.Find(id.GetValueOrDefault());
             if (obj == null) return NotFound();
 
             return View(obj);
@@ -74,11 +76,11 @@ namespace Rocky.Controllers
         [ValidateAntiForgeryToken] // добавление специального токена для защиты данных
         public IActionResult DeletePost(int? id)
         {
-            var obj = _db.ApplicationType.Find(id);
+            var obj = _appTypeRepo.Find(id.GetValueOrDefault());
             if (obj == null) return NotFound();
 
-            _db.ApplicationType.Remove(obj);
-            _db.SaveChanges();
+            _appTypeRepo.Remove(obj);
+            _appTypeRepo.Save();
             return RedirectToAction("Index");
 
         }

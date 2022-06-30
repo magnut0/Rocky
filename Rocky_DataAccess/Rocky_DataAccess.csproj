@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ClassLibrary\Rocky_Utility.csproj" />
     <ProjectReference Include="..\Rocky_Models\Rocky_Models.csproj" />
   </ItemGroup>
 
