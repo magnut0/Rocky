@@ -1,21 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rocky.Data;
-using Rocky.Models;
+using Rocky_DataAccess;
+using Rocky_Models;
+using Rocky_Utility;
 
 namespace Rocky.Controllers
 {
     [Authorize(Roles = WC.AdminRole)]
-    public class ApplicationType : Controller
+    public class ApplicationTypeController : Controller
     {
         private readonly ApplicationDbContext _db;
-        public ApplicationType(ApplicationDbContext db)
+        public ApplicationTypeController(ApplicationDbContext db)
         {
             _db = db;
         }
         public IActionResult Index()
         {
-            IEnumerable<Models.ApplicationType> objList = _db.ApplicationType;
+            IEnumerable<ApplicationType> objList = _db.ApplicationType;
             return View(objList);
         }
 
@@ -27,7 +28,7 @@ namespace Rocky.Controllers
         // POST - CREATE
         [HttpPost]
         [ValidateAntiForgeryToken] // добавление специального токена для защиты данных
-        public IActionResult Create(Models.ApplicationType test)
+        public IActionResult Create(ApplicationType test)
         {
             if (!ModelState.IsValid) return View(test);
 
@@ -49,7 +50,7 @@ namespace Rocky.Controllers
         // POST - Edit
         [HttpPost]
         [ValidateAntiForgeryToken] // добавление специального токена для защиты данных
-        public IActionResult Edit(Models.ApplicationType test)
+        public IActionResult Edit(ApplicationType test)
         {
             if (!ModelState.IsValid) return View(test);
 
