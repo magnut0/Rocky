@@ -42,7 +42,7 @@ namespace Rocky_DataAccess.Repository
 
         public void Update(Product product)
         {
-            _db.Update(product);
+            _db.Product.Update(product);
         }
     }
 }

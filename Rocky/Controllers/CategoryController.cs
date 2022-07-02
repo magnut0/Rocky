@@ -34,11 +34,15 @@ namespace Rocky.Controllers
         [ValidateAntiForgeryToken] // добавление специального токена для защиты данных
         public IActionResult Create(Category category)
         {
-            if (!ModelState.IsValid) return View(category);
-
-            _catRepo.Add(category);
-            _catRepo.Save();
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                _catRepo.Add(category);
+                _catRepo.Save();
+                TempData[WC.Success] = "Category created successfully";
+                return RedirectToAction("Index");
+            }
+            TempData[WC.Error] = "Error while creating category";
+            return View(category);
         }
 
         // Get - Edit

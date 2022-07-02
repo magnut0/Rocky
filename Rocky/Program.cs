@@ -20,6 +20,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.Sign
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>(); // AddScoped сохраняет сервис активным во время одного запроса
 builder.Services.AddScoped<IApplicationTypeRepository, ApplicationTypeRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IInquiryDetailRepository, InquiryDetailRepository>();
+builder.Services.AddScoped<IInquiryHeaderRepository, InquiryHeaderRepository>();
+builder.Services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // old startap

@@ -80,6 +80,11 @@ namespace Rocky_DataAccess.Repository
             dbSet.Remove(entity);
         }
 
+        public void RemoveRange(IEnumerable<T> entities)
+        {
+            dbSet.RemoveRange(entities);
+        }
+
         public void Save()
         {
             _db.SaveChanges();

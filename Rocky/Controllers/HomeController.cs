@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Rocky_DataAccess;
+using Rocky_DataAccess.Repository.IRepository;
 using Rocky_Models;
 using Rocky_Models.ViewModels;
 using Rocky_Utility;
@@ -12,11 +13,13 @@ namespace Rocky.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ApplicationDbContext _db;
+        private readonly IProductRepository _prodRepo;
+        private readonly ICategoryRepository _catRepo;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db)
+        public HomeController(ILogger<HomeController> logger, IProductRepository prodRepo, ICategoryRepository catRepo)
         {
-            _db = db;
+            _prodRepo = prodRepo;
+            _catRepo = catRepo;
             _logger = logger;
         }
 
@@ -24,8 +27,8 @@ namespace Rocky.Controllers
         {
             HomeVM homeVM = new HomeVM()
             {
-                Products = _db.Product.Include(prod => prod.Category).Include(prod => prod.ApplicationType),
-                Categories = _db.Category
+                Products = _prodRepo.GetAll(includeProperties: "Category,ApplicationType"),
+                Categories = _catRepo.GetAll()
             };
             return View(homeVM);
         }
@@ -40,7 +43,7 @@ namespace Rocky.Controllers
 
             DetailsVM detailsVM = new DetailsVM()
             {
-                Product = _db.Product.Include(prod => prod.Category).Include(prod => prod.ApplicationType).Where(prod => prod.Id == id).FirstOrDefault(),
+                Product = _prodRepo.FirstOrDefault(u => u.Id == id, includeProperties: "Category,ApplicationType"),
                 ExistsInCard = false
             };
 

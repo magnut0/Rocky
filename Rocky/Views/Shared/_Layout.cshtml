@@ -8,6 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Rocky</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Rocky.styles.css" asp-append-version="true" />
@@ -43,7 +44,15 @@
                               <li><hr class="dropdown-divider"></li>
                               <li><a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Create Admin User</a></li>
                             </ul>
-                        </li>
+                            </li>
+                            <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              Order/Inquiry Management
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <li><a class="nav-link text-dark" asp-area="" asp-controller="Inquiry" asp-action="Index">Inquiry</a></li>
+                            </ul>
+                            </li>
                         }
                         <li>
                             @if(HttpContextAccessor.HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCard) != null)
@@ -70,6 +79,7 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            <partial name="_Notifications" />
             @RenderBody()
         </main>
     </div>
