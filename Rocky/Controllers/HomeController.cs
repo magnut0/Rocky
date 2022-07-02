@@ -57,14 +57,14 @@ namespace Rocky.Controllers
 
         // add item to cart
         [HttpPost, ActionName("Details")]
-        public IActionResult DetailsPost(int id)
+        public IActionResult DetailsPost(int id, DetailsVM detailsVM)
         {
             List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
             if (HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCard) != null && HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WC.SessionCard).Count() > 0)
             {
                 shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WC.SessionCard);
             }
-            shoppingCartList.Add(new ShoppingCart { ProductId = id});
+            shoppingCartList.Add(new ShoppingCart { ProductId = id, Sqft = detailsVM.Product.TempSqft });
             HttpContext.Session.Set(WC.SessionCard, shoppingCartList);
 
             return RedirectToAction(nameof(Index));
